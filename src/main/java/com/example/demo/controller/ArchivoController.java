@@ -2,7 +2,6 @@ package com.example.demo.controller;
 
 import com.example.demo.entidad.Archivo;
 import com.example.demo.service.ArchivoService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +17,16 @@ import java.util.List;
 @RequestMapping("/archivos")
 public class ArchivoController {
 
-    @Autowired
-    private ArchivoService archivoService;
+    private final ArchivoService archivoService;
 
-    // Página principal con enlaces
+    public ArchivoController(ArchivoService archivoService) {
+        this.archivoService = archivoService;
+    }
+
+    // Página principal
     @GetMapping("/")
     public String verPaginaPrincipal() {
-        return "index";  // Redirige a la página principal con las opciones
+        return "index";
     }
 
     // Listado de archivos
@@ -32,25 +34,30 @@ public class ArchivoController {
     public String verListado(Model model) {
         List<Archivo> archivos = archivoService.obtenerTodos();
         model.addAttribute("archivos", archivos);
-        return "listado";  // Vista para listar los archivos
+        return "listado";
     }
 
-    // Formulario para registrar un archivo
+    // Formulario para subir archivo
     @GetMapping("/registrar")
-    public String registrarArchivo() {
-        return "registrar";  // Vista para el formulario de registro de archivos
+    public String mostrarFormularioRegistro() {
+        return "registrar";
     }
 
-    // Subir un archivo
+    // Subir archivo
     @PostMapping("/subir")
     public String subirArchivo(@RequestParam("archivo") MultipartFile archivo,
-                               @RequestParam("descripcion") String descripcion) {
+                               @RequestParam("descripcion") String descripcion,
+                               Model model) {
         try {
             archivoService.guardarArchivo(archivo, descripcion);
         } catch (IOException e) {
-            e.printStackTrace();
+            model.addAttribute("error", "Error al subir el archivo: " + e.getMessage());
+            return "registrar";
+        } catch (RuntimeException e) {
+            model.addAttribute("error", e.getMessage());
+            return "registrar";
         }
-        return "redirect:/archivos/listado";  // Redirige a la página de listado después de subir el archivo
+        return "redirect:/archivos/listado";
     }
 
     // Descargar archivo
@@ -58,7 +65,6 @@ public class ArchivoController {
     public ResponseEntity<ByteArrayResource> descargarArchivo(@PathVariable Long id) {
         Archivo archivo = archivoService.obtenerArchivo(id);
 
-        // Devuelve el archivo con los encabezados HTTP correctos para que se descargue
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + archivo.getNombreArchivo() + "\"")
                 .header(HttpHeaders.CONTENT_TYPE, archivo.getTipoArchivo())

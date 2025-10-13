@@ -67,7 +67,7 @@
         <tr th:each="archivo : ${archivos}">
           <td th:text="${archivo.nombreArchivo}"></td>
           <td>
-            <span class="badge bg-info text-dark" th:text="${archivo.tipoArchivo}"></span>
+            <span class="badge bg-info text-dark" th:text="${archivo.tipoAmigable}"></span>
           </td>
           <td th:text="${archivo.fechaSubida}"></td>
           <td class="text-end">
