@@ -3,6 +3,8 @@ package com.example.demo.entidad;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.Map;
+
 @Entity
 @Table(name = "archivos")
 @Data
@@ -52,25 +54,26 @@ public class Archivo {
         return tipoArchivo;
     }
 
+    @Transient
+    public String getTipoAmigable() {
+        if (tipoArchivo == null || tipoArchivo.isBlank()) return ArchivoConstants.TIPO_DESCONOCIDO;
+
+        String tipo = tipoArchivo.toLowerCase();
+
+        if (tipo.contains("pdf")) return ArchivoConstants.TIPO_PDF;
+        if (tipo.contains("png")) return ArchivoConstants.TIPO_IMAGEN_PNG;
+        if (tipo.contains("jpeg") || tipo.contains("jpg")) return ArchivoConstants.TIPO_IMAGEN_JPEG;
+        if (tipo.contains("word")) return ArchivoConstants.TIPO_WORD;
+        if (tipo.contains("excel")) return ArchivoConstants.TIPO_EXCEL;
+        if (tipo.contains("powerpoint")) return ArchivoConstants.TIPO_POWERPOINT;
+
+        return tipoArchivo;
+    }
 
     @Transient
     public String getColorTipo() {
-        if (tipoArchivo == null) return "#6c757d";
-
-        return switch (tipoArchivo) {
-            case "application/pdf" -> "#e74c3c";
-            case "image/png", "image/jpeg" -> "#3498db";
-            case "application/msword",
-                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document" -> "#2ecc71";
-
-            case "application/vnd.ms-excel",
-                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" -> "#f39c12";
-            case "application/vnd.ms-powerpoint",
-                 "application/vnd.openxmlformats-officedocument.presentationml.presentation" -> "#9b59b6";
-            default -> "#6c757d";
-        };
+        return ArchivoConstants.TIPO_COLOR_MAP.getOrDefault(tipoArchivo, ArchivoConstants.COLOR_DEFAULT);
     }
-
 
     @Transient
     public String getTamanoLegible() {
