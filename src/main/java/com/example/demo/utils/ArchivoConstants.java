@@ -51,5 +51,5 @@ public class ArchivoConstants {
             "application/vnd.ms-powerpoint",
             "application/vnd.openxmlformats-officedocument.presentationml.presentation"
     );
-
+    public static final String ARCHIVO_NO_ENCONTRADO = "Archivo no encontrado con ID: %d";
 }
