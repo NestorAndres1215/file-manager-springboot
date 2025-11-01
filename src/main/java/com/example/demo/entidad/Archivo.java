@@ -1,6 +1,11 @@
 package com.example.demo.entidad;
 
+import com.example.demo.utils.ArchivoConstants;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -15,44 +20,34 @@ public class Archivo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "codigo", nullable = false)
     private Long id;
 
+    @NotBlank(message = "El nombre del archivo es obligatorio")
     @Column(name = "nombre_archivo", nullable = false)
     private String nombreArchivo;
 
+    @NotBlank(message = "El tipo de archivo es obligatorio")
     @Column(name = "tipo_archivo", nullable = false)
     private String tipoArchivo;
 
+    @NotNull(message = "El archivo no puede estar vacío")
     @Lob
     @Column(name = "archivo", columnDefinition = "LONGBLOB", nullable = false)
     private byte[] archivo;
 
+    @Min(value = 1, message = "El tamaño del archivo debe ser mayor a 0")
     @Column(nullable = false)
     private long tamano;
 
-    @Column(length = 500)
+    @NotBlank(message = "La descripción es obligatoria")
+    @Size(max = 500, message = "La descripción no puede superar los 500 caracteres")
+    @Column(length = 500, nullable = false)
     private String descripcion;
 
     @Column(name = "fecha_subida", nullable = false)
     private LocalDateTime fechaSubida;
 
-    @Transient
-    public String getTipoAmigable() {
-        if (tipoArchivo == null || tipoArchivo.isBlank()) {
-            return "Desconocido";
-        }
-
-        String tipo = tipoArchivo.toLowerCase();
-
-        if (tipo.contains("pdf")) return "PDF";
-        if (tipo.contains("png")) return "Imagen PNG";
-        if (tipo.contains("jpeg") || tipo.contains("jpg")) return "Imagen JPEG";
-        if (tipo.contains("word")) return "Word";
-        if (tipo.contains("excel")) return "Excel";
-        if (tipo.contains("powerpoint")) return "PowerPoint";
-
-        return tipoArchivo;
-    }
 
     @Transient
     public String getTipoAmigable() {

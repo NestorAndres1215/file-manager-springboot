@@ -28,10 +28,8 @@ public interface ArchivoRepository extends JpaRepository<Archivo, Long> {
 
     List<Archivo> findAllByOrderByTamanoDesc();
 
-    // Listar todos los archivos ordenados por nombre
     List<Archivo> findAllByOrderByNombreArchivoAsc();
     List<Archivo> findAllByOrderByNombreArchivoDesc();
 
-    // Buscar archivos por nombre (contiene, ignorando mayúsculas)
     List<Archivo> findByNombreArchivoContainingIgnoreCase(String nombre);
 }
