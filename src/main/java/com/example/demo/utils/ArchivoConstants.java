@@ -1,5 +1,6 @@
 package com.example.demo.utils;
 
+import java.util.List;
 import java.util.Map;
 
 public class ArchivoConstants {
@@ -36,4 +37,19 @@ public class ArchivoConstants {
             Map.entry("application/vnd.ms-powerpoint", COLOR_POWERPOINT),
             Map.entry("application/vnd.openxmlformats-officedocument.presentationml.presentation", COLOR_POWERPOINT)
     );
+
+    public static final long MAX_SIZE = 10 * 1024 * 1024; // 10 MB
+
+    public static final List<String> ALLOWED_TYPES = List.of(
+            "image/png",
+            "image/jpeg",
+            "application/pdf",
+            "application/msword",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/vnd.ms-excel",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "application/vnd.ms-powerpoint",
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+    );
+
 }

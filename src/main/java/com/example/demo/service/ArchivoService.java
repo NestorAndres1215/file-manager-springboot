@@ -1,8 +1,10 @@
 package com.example.demo.service;
 
 import com.example.demo.entidad.Archivo;
+import com.example.demo.exception.ArchivoNoEncontradoException;
 import com.example.demo.exception.ArchivoNoValidoException;
 import com.example.demo.repository.ArchivoRepository;
+import com.example.demo.utils.ArchivoConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,18 +22,6 @@ public class ArchivoService {
 
     private final ArchivoRepository archivoRepository;
 
-    private static final long MAX_SIZE = 10 * 1024 * 1024;
-    private static final List<String> ALLOWED_TYPES = List.of(
-            "image/png",
-            "image/jpeg",
-            "application/pdf",
-            "application/msword",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            "application/vnd.ms-excel",
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            "application/vnd.ms-powerpoint",
-            "application/vnd.openxmlformats-officedocument.presentationml.presentation"
-    );
 
     public Archivo guardarArchivo(MultipartFile archivo, String descripcion) throws IOException {
         validarArchivo(archivo);
@@ -48,9 +38,10 @@ public class ArchivoService {
         return archivoRepository.save(nuevoArchivo);
     }
 
+
     public Archivo obtenerArchivo(Long id) {
         return archivoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Archivo no encontrado con id: " + id));
+                .orElseThrow(() -> new ArchivoNoEncontradoException("Archivo no encontrado con id: " + id));
     }
 
     public List<Archivo> obtenerTodos() {
@@ -63,6 +54,7 @@ public class ArchivoService {
         }
         return archivoRepository.findByTipoArchivoIgnoreCase(tipo);
     }
+
 
     public List<Archivo> ultimos10Archivos() {
         return archivoRepository.findTop10ByOrderByFechaSubidaDesc();
@@ -95,25 +87,25 @@ public class ArchivoService {
 
     public void eliminarArchivo(Long id) {
         if (!archivoRepository.existsById(id)) {
-            throw new RuntimeException("Archivo no encontrado con id: " + id);
+            throw new ArchivoNoEncontradoException("Archivo no encontrado con id: " + id);
         }
         archivoRepository.deleteById(id);
     }
 
     private void validarArchivo(MultipartFile archivo) {
         if (archivo == null || archivo.isEmpty()) {
-            throw new RuntimeException("El archivo no puede estar vacío");
+            throw new ArchivoNoValidoException("El archivo no puede estar vacío");
         }
 
-        if (archivo.getSize() > MAX_SIZE) {
-            throw new RuntimeException(
+        if (archivo.getSize() > ArchivoConstants.MAX_SIZE) {
+            throw new ArchivoNoValidoException(
                     String.format("El archivo '%s' excede el tamaño máximo permitido (%d MB)",
-                            archivo.getOriginalFilename(), MAX_SIZE / (1024 * 1024))
+                            archivo.getOriginalFilename(), ArchivoConstants.MAX_SIZE / (1024 * 1024))
             );
         }
 
-        if (!ALLOWED_TYPES.contains(archivo.getContentType())) {
-            throw new RuntimeException(
+        if (!ArchivoConstants.ALLOWED_TYPES.contains(archivo.getContentType())) {
+            throw new ArchivoNoValidoException(
                     String.format("Tipo de archivo no permitido: %s", archivo.getContentType())
             );
         }
@@ -142,6 +134,7 @@ public class ArchivoService {
     public List<Archivo> listarPorNombreDesc() {
         return archivoRepository.findAllByOrderByNombreArchivoDesc();
     }
+
     public List<Archivo> buscarPorNombre(String nombre) {
         if (nombre == null || nombre.isBlank()) {
             return archivoRepository.findAll();
