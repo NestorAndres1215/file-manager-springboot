@@ -135,4 +135,17 @@ public class ArchivoService {
         return archivoRepository.findAllByOrderByTamanoDesc();
     }
 
+    public List<Archivo> listarPorNombreAsc() {
+        return archivoRepository.findAllByOrderByNombreArchivoAsc();
+    }
+
+    public List<Archivo> listarPorNombreDesc() {
+        return archivoRepository.findAllByOrderByNombreArchivoDesc();
+    }
+    public List<Archivo> buscarPorNombre(String nombre) {
+        if (nombre == null || nombre.isBlank()) {
+            return archivoRepository.findAll();
+        }
+        return archivoRepository.findByNombreArchivoContainingIgnoreCase(nombre);
+    }
 }

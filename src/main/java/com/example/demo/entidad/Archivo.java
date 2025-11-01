@@ -62,6 +62,7 @@ public class Archivo {
             case "image/png", "image/jpeg" -> "#3498db";
             case "application/msword",
                  "application/vnd.openxmlformats-officedocument.wordprocessingml.document" -> "#2ecc71";
+
             case "application/vnd.ms-excel",
                  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" -> "#f39c12";
             case "application/vnd.ms-powerpoint",
