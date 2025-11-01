@@ -1,84 +1,193 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Gestión de Archivos</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gestor de Archivos - Panel Principal</title>
+
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <!-- Google Fonts: Inter (moderna y legible) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
-        .hero-section {
-            background-color: #f8f9fa;
-            padding: 3rem 0;
-            margin-bottom: 2rem;
-            border-radius: 0.5rem;
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            --card-shadow-hover: 0 15px 35px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
         }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+
+        .hero-section {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 4rem 0;
+            border-radius: 1.5rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,30 L100,100 L0,100 Z" fill="rgba(255,255,255,0.1)"/></svg>') no-repeat bottom;
+            background-size: cover;
+            opacity: 0.3;
+        }
+
+        .hero-title {
+            font-weight: 700;
+            font-size: 2.8rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            font-weight: 500;
+        }
+
         .option-card {
-            transition: transform 0.3s ease;
+            background: white;
+            border: none;
+            border-radius: 1.2rem;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            height: 100%;
+            position: relative;
+        }
+
+        .option-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--card-shadow-hover);
+        }
+
+        .card-icon-wrapper {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .card-icon {
+            font-size: 2.2rem;
+            color: white;
+        }
+
+        .card-body {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .card-title {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 1rem;
+        }
+
+        .card-text {
+            color: #718096;
+            font-size: 0.95rem;
             margin-bottom: 1.5rem;
         }
-        .option-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+
+        .btn-action {
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 50px;
+            padding: 0.75rem 1.8rem;
+            font-weight: 600;
+            text-transform: none;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: var(--transition);
         }
-        .card-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            color: #0d6efd;
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-action i {
+            font-size: 1.1rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.2rem;
+            }
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+            .col-md-6 {
+                margin-bottom: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
 <div class="container">
     <!-- Hero Section -->
-    <div class="hero-section text-center">
-        <h1 class="display-4 fw-bold">Bienvenido al Gestor de Archivos</h1>
-        <p class="lead">Administra tus archivos de manera sencilla y eficiente</p>
+    <div class="hero-section text-center position-relative">
+        <div class="container">
+            <h1 class="hero-title mb-3">Gestor de Archivos</h1>
+            <p class="hero-subtitle">Organiza, sube y gestiona tus documentos con facilidad y seguridad</p>
+        </div>
     </div>
 
     <!-- Options Section -->
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <h2 class="text-center mb-4">Opciones Disponibles</h2>
-
-            <div class="row">
-                <!-- List Files Option -->
-                <div class="col-md-6">
-                    <div class="card option-card text-center h-100">
-                        <div class="card-body">
-                            <div class="card-icon">
-                                <i class="bi bi-list-ul"></i>
-                            </div>
-                            <h3 class="card-title">Listado de Archivos</h3>
-                            <p class="card-text">Visualiza y gestiona todos los archivos almacenados en el sistema.</p>
-                            <a href="/archivos/listado" class="btn btn-primary">
-                                <i class="bi bi-arrow-right-circle me-2"></i>Acceder
-                            </a>
-                        </div>
+    <div class="row justify-content-center g-4">
+        <div class="col-md-5 col-lg-4">
+            <div class="option-card">
+                <div class="card-body">
+                    <div class="card-icon-wrapper">
+                        <i class="bi bi-list-ul card-icon"></i>
                     </div>
+                    <h3 class="card-title">Listado de Archivos</h3>
+                    <p class="card-text">Explora todos los archivos almacenados, filtra y gestiona con un solo clic.</p>
+                    <a href="/archivos/listado" class="btn btn-action text-white">
+                        <i class="bi bi-arrow-right-circle me-2"></i> Ver Archivos
+                    </a>
                 </div>
+            </div>
+        </div>
 
-                <!-- Register File Option -->
-                <div class="col-md-6">
-                    <div class="card option-card text-center h-100">
-                        <div class="card-body">
-                            <div class="card-icon">
-                                <i class="bi bi-cloud-arrow-up"></i>
-                            </div>
-                            <h3 class="card-title">Registrar Archivo</h3>
-                            <p class="card-text">Sube y registra nuevos archivos en el sistema de gestión.</p>
-                            <a href="/archivos/registrar" class="btn btn-primary">
-                                <i class="bi bi-plus-circle me-2"></i>Nuevo Archivo
-                            </a>
-                        </div>
+        <div class="col-md-5 col-lg-4">
+            <div class="option-card">
+                <div class="card-body">
+                    <div class="card-icon-wrapper">
+                        <i class="bi bi-cloud-arrow-up card-icon"></i>
                     </div>
+                    <h3 class="card-title">Registrar Archivo</h3>
+                    <p class="card-text">Sube nuevos documentos de forma segura y organízalos al instante.</p>
+                    <a href="/archivos/registrar" class="btn btn-action text-white">
+                        <i class="bi bi-plus-circle me-2"></i> Subir Nuevo
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Bootstrap JS Bundle with Popper -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Bootstrap 5.3 JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

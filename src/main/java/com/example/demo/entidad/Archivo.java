@@ -51,4 +51,18 @@ public class Archivo {
 
         return tipoArchivo; // Si no coincide con nada
     }
+    public String getColorTipo() {
+        if (tipoArchivo == null) return "#6c757d"; // gris por defecto
+        return switch (tipoArchivo) {
+            case "application/pdf" -> "#e74c3c"; // rojo para PDFs
+            case "image/png", "image/jpeg" -> "#3498db"; // azul para imágenes
+            case "application/msword",
+                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document" -> "#2ecc71"; // verde para Word
+            case "application/vnd.ms-excel",
+                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" -> "#f39c12"; // naranja para Excel
+            case "application/vnd.ms-powerpoint",
+                 "application/vnd.openxmlformats-officedocument.presentationml.presentation" -> "#9b59b6"; // morado para PowerPoint
+            default -> "#6c757d"; // gris para otros
+        };
+    }
 }
