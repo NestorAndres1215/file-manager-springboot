@@ -34,9 +34,6 @@ public class Archivo {
     @Column(name = "fecha_subida", nullable = false)
     private LocalDateTime fechaSubida;
 
-    // ------------------------------
-    // Método para mostrar tipo de archivo amigable
-    // ------------------------------
     @Transient
     public String getTipoAmigable() {
         if (tipoArchivo == null || tipoArchivo.isBlank()) {
@@ -52,33 +49,28 @@ public class Archivo {
         if (tipo.contains("excel")) return "Excel";
         if (tipo.contains("powerpoint")) return "PowerPoint";
 
-        // Retorna el tipo original si no se reconoce
         return tipoArchivo;
     }
 
-    // ------------------------------
-    // Método para obtener un color representativo según tipo de archivo
-    // ------------------------------
+
     @Transient
     public String getColorTipo() {
-        if (tipoArchivo == null) return "#6c757d"; // Gris por defecto
+        if (tipoArchivo == null) return "#6c757d";
 
         return switch (tipoArchivo) {
-            case "application/pdf" -> "#e74c3c"; // Rojo para PDF
-            case "image/png", "image/jpeg" -> "#3498db"; // Azul para imágenes
+            case "application/pdf" -> "#e74c3c";
+            case "image/png", "image/jpeg" -> "#3498db";
             case "application/msword",
-                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document" -> "#2ecc71"; // Verde para Word
+                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document" -> "#2ecc71";
             case "application/vnd.ms-excel",
-                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" -> "#f39c12"; // Naranja para Excel
+                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" -> "#f39c12";
             case "application/vnd.ms-powerpoint",
-                 "application/vnd.openxmlformats-officedocument.presentationml.presentation" -> "#9b59b6"; // Morado para PowerPoint
-            default -> "#6c757d"; // Gris para otros
+                 "application/vnd.openxmlformats-officedocument.presentationml.presentation" -> "#9b59b6";
+            default -> "#6c757d";
         };
     }
 
-    // ------------------------------
-    // Método auxiliar para obtener tamaño en KB o MB legible
-    // ------------------------------
+
     @Transient
     public String getTamanoLegible() {
         if (tamano < 1024) return tamano + " B";

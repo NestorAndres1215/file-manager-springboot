@@ -23,4 +23,10 @@ public interface ArchivoRepository extends JpaRepository<Archivo, Long> {
     List<Archivo> findByTamanoGreaterThan(long tamano);
 
     List<Archivo> findByFechaSubidaBetween(LocalDateTime inicio, LocalDateTime fin);
+
+    // Tamaño ascendente
+    List<Archivo> findAllByOrderByTamanoAsc();
+
+    // Tamaño descendente
+    List<Archivo> findAllByOrderByTamanoDesc();
 }

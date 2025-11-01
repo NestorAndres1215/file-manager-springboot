@@ -25,27 +25,25 @@ public class ArchivoRestController {
 
     private final ArchivoService archivoService;
 
-    // ------------------------------
-    // Listar todos los archivos
-    // ------------------------------
     @Operation(summary = "Obtener todos los archivos")
     @GetMapping
     public List<Archivo> obtenerTodos() {
         return archivoService.obtenerTodos();
     }
 
-    // ------------------------------
-    // Obtener archivo por ID
-    // ------------------------------
     @Operation(summary = "Obtener un archivo por ID")
     @GetMapping("/{id}")
     public Archivo obtenerPorId(@PathVariable Long id) {
         return archivoService.obtenerArchivo(id);
     }
 
-    // ------------------------------
-    // Subir nuevo archivo
-    // ------------------------------
+    @Operation(summary = "Tipo Listar")
+    @GetMapping("/tipo")
+    public ResponseEntity<List<Archivo>> listarPorTipo(@RequestParam(required = false) String tipo) {
+        List<Archivo> archivos = archivoService.listarPorTipo(tipo);
+        return ResponseEntity.ok(archivos);
+    }
+
     @Operation(summary = "Subir un nuevo archivo")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Archivo subirArchivo(@RequestParam("archivo") MultipartFile archivo,
@@ -53,9 +51,7 @@ public class ArchivoRestController {
         return archivoService.guardarArchivo(archivo, descripcion);
     }
 
-    // ------------------------------
-    // Descargar archivo por ID
-    // ------------------------------
+
     @Operation(summary = "Descargar un archivo por ID")
     @GetMapping("/descargar/{id}")
     public ResponseEntity<ByteArrayResource> descargarArchivo(@PathVariable Long id) {
@@ -67,9 +63,6 @@ public class ArchivoRestController {
                 .body(new ByteArrayResource(archivo.getArchivo()));
     }
 
-    // ------------------------------
-    // Actualizar archivo existente
-    // ------------------------------
     @Operation(summary = "Actualizar un archivo existente")
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Archivo actualizarArchivo(@PathVariable Long id,
@@ -78,9 +71,6 @@ public class ArchivoRestController {
         return archivoService.actualizarArchivo(id, archivoNuevo, descripcion);
     }
 
-    // ------------------------------
-    // Eliminar archivo por ID
-    // ------------------------------
     @Operation(summary = "Eliminar un archivo por ID")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarArchivo(@PathVariable Long id) {
@@ -88,37 +78,32 @@ public class ArchivoRestController {
         return ResponseEntity.noContent().build();
     }
 
-    // ------------------------------
-    // Filtrar por tipo (amigable) y ordenar
-    // ------------------------------
-    @Operation(summary = "Listar archivos por tipo y orden de fecha")
-    @GetMapping("/filtrar")
-    public List<Archivo> filtrarPorTipoYFecha(@RequestParam(value = "tipo", required = false) String tipo,
-                                              @RequestParam(value = "ascendente", defaultValue = "true") boolean ascendente) {
-        return archivoService.listarPorTipoYFecha(tipo, ascendente);
+    @Operation(summary = "Listar archivos por tipo (fecha ascendente)")
+    @GetMapping("/tipo/{tipo}/asc")
+    public ResponseEntity<List<Archivo>> listarPorTipoAsc(@PathVariable String tipo) {
+        List<Archivo> archivos = archivoService.listarPorTipoFechaAsc(tipo);
+        return ResponseEntity.ok(archivos);
     }
 
-    // ------------------------------
-    // Últimos 10 archivos
-    // ------------------------------
+    @Operation(summary = "Listar archivos por tipo (fecha descendente)")
+    @GetMapping("/tipo/{tipo}/desc")
+    public ResponseEntity<List<Archivo>> listarPorTipoDesc(@PathVariable String tipo) {
+        List<Archivo> archivos = archivoService.listarPorTipoFechaDesc(tipo);
+        return ResponseEntity.ok(archivos);
+    }
+
     @Operation(summary = "Obtener los últimos 10 archivos subidos")
     @GetMapping("/ultimos")
     public List<Archivo> ultimos10() {
         return archivoService.ultimos10Archivos();
     }
 
-    // ------------------------------
-    // Archivos por tamaño mínimo
-    // ------------------------------
     @Operation(summary = "Listar archivos con tamaño mayor al indicado")
     @GetMapping("/tamano")
     public List<Archivo> archivosPorTamano(@RequestParam("min") long tamanoMinimo) {
         return archivoService.archivosPorTamano(tamanoMinimo);
     }
 
-    // ------------------------------
-    // Archivos entre fechas
-    // ------------------------------
     @Operation(summary = "Listar archivos subidos entre fechas")
     @GetMapping("/fechas")
     public List<Archivo> archivosEntreFechas(@RequestParam("inicio") String inicioStr,
@@ -126,6 +111,20 @@ public class ArchivoRestController {
         LocalDateTime inicio = LocalDateTime.parse(inicioStr);
         LocalDateTime fin = LocalDateTime.parse(finStr);
         return archivoService.archivosEntreFechas(inicio, fin);
+    }
+
+    @Operation(summary = "Listar todos los archivos por tamaño ascendente")
+    @GetMapping("/tamano/asc")
+    public ResponseEntity<List<Archivo>> listarPorTamanoAsc() {
+        List<Archivo> archivos = archivoService.listarPorTamanoAsc();
+        return ResponseEntity.ok(archivos);
+    }
+
+    @Operation(summary = "Listar todos los archivos por tamaño descendente")
+    @GetMapping("/tamano/desc")
+    public ResponseEntity<List<Archivo>> listarPorTamanoDesc() {
+        List<Archivo> archivos = archivoService.listarPorTamanoDesc();
+        return ResponseEntity.ok(archivos);
     }
 }
 

@@ -20,7 +20,7 @@ public class ArchivoService {
 
     private final ArchivoRepository archivoRepository;
 
-    private static final long MAX_SIZE = 10 * 1024 * 1024; // 10 MB
+    private static final long MAX_SIZE = 10 * 1024 * 1024;
     private static final List<String> ALLOWED_TYPES = List.of(
             "image/png",
             "image/jpeg",
@@ -33,9 +33,6 @@ public class ArchivoService {
             "application/vnd.openxmlformats-officedocument.presentationml.presentation"
     );
 
-    // ------------------------------
-    // Guardar archivo
-    // ------------------------------
     public Archivo guardarArchivo(MultipartFile archivo, String descripcion) throws IOException {
         validarArchivo(archivo);
 
@@ -51,24 +48,15 @@ public class ArchivoService {
         return archivoRepository.save(nuevoArchivo);
     }
 
-    // ------------------------------
-    // Obtener archivo por ID
-    // ------------------------------
     public Archivo obtenerArchivo(Long id) {
         return archivoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Archivo no encontrado con id: " + id));
     }
 
-    // ------------------------------
-    // Listar todos los archivos
-    // ------------------------------
     public List<Archivo> obtenerTodos() {
         return archivoRepository.findAll();
     }
 
-    // ------------------------------
-    // Listar archivos por tipo (sin importar mayúsculas/minúsculas)
-    // ------------------------------
     public List<Archivo> listarPorTipo(String tipo) {
         if (tipo == null || tipo.isBlank()) {
             return archivoRepository.findAll();
@@ -76,49 +64,18 @@ public class ArchivoService {
         return archivoRepository.findByTipoArchivoIgnoreCase(tipo);
     }
 
-    // ------------------------------
-    // Listar por tipo y ordenar por fecha
-    // ------------------------------
-    public List<Archivo> listarPorTipoYFecha(String tipo, boolean ascendente) {
-        if (tipo == null || tipo.isBlank()) {
-            return ascendente
-                    ? archivoRepository.findAll().stream()
-                    .sorted(Comparator.comparing(Archivo::getFechaSubida))
-                    .toList()
-                    : archivoRepository.findAll().stream()
-                    .sorted(Comparator.comparing(Archivo::getFechaSubida).reversed())
-                    .toList();
-        }
-
-        return ascendente
-                ? archivoRepository.findByTipoArchivoIgnoreCaseOrderByFechaSubidaAsc(tipo)
-                : archivoRepository.findByTipoArchivoIgnoreCaseOrderByFechaSubidaDesc(tipo);
-    }
-
-    // ------------------------------
-    // Obtener últimos 10 archivos
-    // ------------------------------
     public List<Archivo> ultimos10Archivos() {
         return archivoRepository.findTop10ByOrderByFechaSubidaDesc();
     }
 
-    // ------------------------------
-    // Buscar archivos por tamaño mínimo
-    // ------------------------------
     public List<Archivo> archivosPorTamano(long tamanoMinimo) {
         return archivoRepository.findByTamanoGreaterThan(tamanoMinimo);
     }
 
-    // ------------------------------
-    // Buscar archivos entre fechas
-    // ------------------------------
     public List<Archivo> archivosEntreFechas(LocalDateTime inicio, LocalDateTime fin) {
         return archivoRepository.findByFechaSubidaBetween(inicio, fin);
     }
 
-    // ------------------------------
-    // Actualizar archivo existente
-    // ------------------------------
     public Archivo actualizarArchivo(Long id, MultipartFile archivoNuevo, String descripcion) throws IOException {
         Archivo archivoExistente = obtenerArchivo(id);
 
@@ -136,9 +93,6 @@ public class ArchivoService {
         return archivoRepository.save(archivoExistente);
     }
 
-    // ------------------------------
-    // Eliminar archivo
-    // ------------------------------
     public void eliminarArchivo(Long id) {
         if (!archivoRepository.existsById(id)) {
             throw new RuntimeException("Archivo no encontrado con id: " + id);
@@ -146,9 +100,6 @@ public class ArchivoService {
         archivoRepository.deleteById(id);
     }
 
-    // ------------------------------
-    // Validar archivo
-    // ------------------------------
     private void validarArchivo(MultipartFile archivo) {
         if (archivo == null || archivo.isEmpty()) {
             throw new RuntimeException("El archivo no puede estar vacío");
@@ -167,4 +118,21 @@ public class ArchivoService {
             );
         }
     }
+
+    public List<Archivo> listarPorTipoFechaAsc(String tipo) {
+        return archivoRepository.findByTipoArchivoIgnoreCaseOrderByFechaSubidaAsc(tipo);
+    }
+
+    public List<Archivo> listarPorTipoFechaDesc(String tipo) {
+        return archivoRepository.findByTipoArchivoIgnoreCaseOrderByFechaSubidaDesc(tipo);
+    }
+
+    public List<Archivo> listarPorTamanoAsc() {
+        return archivoRepository.findAllByOrderByTamanoAsc();
+    }
+
+    public List<Archivo> listarPorTamanoDesc() {
+        return archivoRepository.findAllByOrderByTamanoDesc();
+    }
+
 }
