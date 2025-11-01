@@ -5,18 +5,22 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
 public interface ArchivoRepository extends JpaRepository<Archivo, Long> {
 
 
-    @Query("SELECT a FROM Archivo a WHERE LOWER(a.tipoArchivo) LIKE LOWER(CONCAT('%', :tipo, '%')) ORDER BY a.fechaSubida DESC")
-    List<Archivo> buscarPorTipoLikeOrderByFechaDesc(String tipo);
+    List<Archivo> findByTipoArchivoIgnoreCase(String tipo);
 
-    @Query("SELECT a FROM Archivo a WHERE LOWER(a.tipoArchivo) LIKE LOWER(CONCAT('%', :tipo, '%')) ORDER BY a.fechaSubida ASC")
-    List<Archivo> buscarPorTipoLikeOrderByFechaAsc(String tipo);
+    List<Archivo> findByTipoArchivoIgnoreCaseOrderByFechaSubidaAsc(String tipo);
 
-    @Query("SELECT a FROM Archivo a WHERE LOWER(a.tipoArchivo) LIKE LOWER(CONCAT('%', :tipo, '%'))")
-    List<Archivo> listarPorTipo(String tipo);
+    List<Archivo> findByTipoArchivoIgnoreCaseOrderByFechaSubidaDesc(String tipo);
+
+    List<Archivo> findTop10ByOrderByFechaSubidaDesc();
+
+    List<Archivo> findByTamanoGreaterThan(long tamano);
+
+    List<Archivo> findByFechaSubidaBetween(LocalDateTime inicio, LocalDateTime fin);
 }
