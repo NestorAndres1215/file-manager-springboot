@@ -150,4 +150,17 @@ public class ArchivoService {
             );
         }
     }
+
+    // ------------------------------
+    // Listar archivos por tipo de archivo (filtrado flexible, sin ordenar)
+    // ------------------------------
+    public List<Archivo> listarPorTipoArchivo(String tipoBuscado) {
+        if (tipoBuscado == null || tipoBuscado.isBlank()) {
+            return archivoRepository.findAll();
+        }
+        return archivoRepository.listarPorTipo(tipoBuscado);
+    }
+
+
+
 }

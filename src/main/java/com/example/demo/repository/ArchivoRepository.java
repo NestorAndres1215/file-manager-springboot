@@ -16,4 +16,7 @@ public interface ArchivoRepository extends JpaRepository<Archivo, Long> {
 
     @Query("SELECT a FROM Archivo a WHERE LOWER(a.tipoArchivo) LIKE LOWER(CONCAT('%', :tipo, '%')) ORDER BY a.fechaSubida ASC")
     List<Archivo> buscarPorTipoLikeOrderByFechaAsc(String tipo);
+
+    @Query("SELECT a FROM Archivo a WHERE LOWER(a.tipoArchivo) LIKE LOWER(CONCAT('%', :tipo, '%'))")
+    List<Archivo> listarPorTipo(String tipo);
 }
