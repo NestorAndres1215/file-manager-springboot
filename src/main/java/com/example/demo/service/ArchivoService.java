@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.entidad.Archivo;
 import com.example.demo.exception.ArchivoNoValidoException;
 import com.example.demo.repository.ArchivoRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,14 +13,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 @Service
+@RequiredArgsConstructor
 public class ArchivoService {
 
     private final ArchivoRepository archivoRepository;
-
-    public ArchivoService(ArchivoRepository archivoRepository) {
-        this.archivoRepository = archivoRepository;
-    }
 
     private static final long MAX_SIZE = 10 * 1024 * 1024; // 10 MB
 
@@ -35,11 +34,13 @@ public class ArchivoService {
             "application/vnd.openxmlformats-officedocument.presentationml.presentation"
     );
 
+    // ------------------------------
     // Guardar archivo
-    public void guardarArchivo(MultipartFile archivo, String descripcion) throws IOException {
+    // ------------------------------
+    public Archivo guardarArchivo(MultipartFile archivo, String descripcion) throws IOException {
         validarArchivo(archivo);
 
-        Archivo archivoEntity = Archivo.builder()
+        Archivo nuevoArchivo = Archivo.builder()
                 .nombreArchivo(archivo.getOriginalFilename())
                 .tipoArchivo(archivo.getContentType())
                 .archivo(archivo.getBytes())
@@ -48,32 +49,89 @@ public class ArchivoService {
                 .fechaSubida(LocalDateTime.now())
                 .build();
 
-        archivoRepository.save(archivoEntity);
+        return archivoRepository.save(nuevoArchivo);
     }
 
-    // Obtener archivo por id
+    // ------------------------------
+    // Obtener archivo por ID
+    // ------------------------------
     public Archivo obtenerArchivo(Long id) {
         return archivoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Archivo no encontrado con id: " + id));
     }
 
-    // Obtener todos los archivos
+    // ------------------------------
+    // Listar todos los archivos
+    // ------------------------------
     public List<Archivo> obtenerTodos() {
         return archivoRepository.findAll();
     }
 
-    // Obtener archivos filtrados por tipo amigable
+    // ------------------------------
+    // Listar por tipo amigable (filtro flexible usando LIKE en DB)
+    // ------------------------------
     public List<Archivo> listarPorTipoAmigable(String tipoBuscado) {
-        if (tipoBuscado == null || tipoBuscado.isEmpty()) {
+        if (tipoBuscado == null || tipoBuscado.isBlank()) {
             return archivoRepository.findAll();
         }
-        String tipoLower = tipoBuscado.toLowerCase();
-        return archivoRepository.findAll().stream()
-                .filter(a -> a.getTipoAmigable().toLowerCase().contains(tipoLower))
-                .collect(Collectors.toList());
+        return archivoRepository.buscarPorTipoLikeOrderByFechaAsc(tipoBuscado);
     }
 
-    // Validar archivo
+    // ------------------------------
+    // Listar por tipo y fecha (ascendente o descendente)
+    // ------------------------------
+    public List<Archivo> listarPorTipoYFecha(String tipoBuscado, boolean ascendente) {
+        if (tipoBuscado == null || tipoBuscado.isBlank()) {
+            // Ordenar todos en memoria
+            return ascendente
+                    ? archivoRepository.findAll().stream()
+                    .sorted(Comparator.comparing(Archivo::getFechaSubida))
+                    .toList()
+                    : archivoRepository.findAll().stream()
+                    .sorted(Comparator.comparing(Archivo::getFechaSubida).reversed())
+                    .toList();
+        }
+
+        // Filtrar por tipo amigable directamente en la BD
+        return ascendente
+                ? archivoRepository.buscarPorTipoLikeOrderByFechaAsc(tipoBuscado)
+                : archivoRepository.buscarPorTipoLikeOrderByFechaDesc(tipoBuscado);
+    }
+
+    // ------------------------------
+    // Actualizar archivo existente
+    // ------------------------------
+    public Archivo actualizarArchivo(Long id, MultipartFile archivoNuevo, String descripcion) throws IOException {
+        Archivo archivoExistente = archivoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Archivo no encontrado con id: " + id));
+
+        if (archivoNuevo != null && !archivoNuevo.isEmpty()) {
+            validarArchivo(archivoNuevo);
+            archivoExistente.setNombreArchivo(archivoNuevo.getOriginalFilename());
+            archivoExistente.setTipoArchivo(archivoNuevo.getContentType());
+            archivoExistente.setArchivo(archivoNuevo.getBytes());
+            archivoExistente.setTamano(archivoNuevo.getSize());
+            archivoExistente.setFechaSubida(LocalDateTime.now());
+        }
+
+        archivoExistente.setDescripcion(descripcion);
+
+        return archivoRepository.save(archivoExistente);
+    }
+
+    // ------------------------------
+    // Eliminar archivo por ID
+    // ------------------------------
+    public void eliminarArchivo(Long id) {
+        if (!archivoRepository.existsById(id)) {
+            throw new RuntimeException("Archivo no encontrado con id: " + id);
+        }
+        archivoRepository.deleteById(id);
+    }
+
+    // ------------------------------
+    // Validar archivo (tipo y tamaño)
+    // ------------------------------
     private void validarArchivo(MultipartFile archivo) {
         if (archivo == null || archivo.isEmpty()) {
             throw new ArchivoNoValidoException("El archivo no puede estar vacío");
@@ -92,22 +150,4 @@ public class ArchivoService {
             );
         }
     }
-
-    public List<Archivo> listarPorTipoYFechaRepository(String tipo, boolean ascendente) {
-        if (tipo == null || tipo.isEmpty()) {
-            return ascendente
-                    ? archivoRepository.findAll().stream()
-                    .sorted(Comparator.comparing(Archivo::getFechaSubida))
-                    .collect(Collectors.toList())
-                    : archivoRepository.findAll().stream()
-                    .sorted(Comparator.comparing(Archivo::getFechaSubida).reversed())
-                    .collect(Collectors.toList());
-        }
-
-        return ascendente
-                ? archivoRepository.buscarPorTipoLikeOrderByFechaAsc(tipo)
-                : archivoRepository.buscarPorTipoLikeOrderByFechaDesc(tipo);
-    }
-
-
 }
